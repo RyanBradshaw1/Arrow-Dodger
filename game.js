@@ -14,11 +14,37 @@ const createSprite = ({x, y, width, height, color, active}) => {
             ctx.fillRect(sprite.x, sprite.y, width, height)
             ctx.restore()
         },
-        update(delta) {
-            sprite.x -= 20 * delta
+        update() {
+            sprite.x -= 20
         }
     }
     return sprite
+}
+
+const createPlayer = ({x, y, width, height, color, active}) => {
+    const playerSprite = {
+        x,
+        y,
+        active,
+        visible: true,
+        draw (ctx) {
+            ctx.save()
+            ctx.fillStyle = color
+            ctx.beginPath()
+            ctx.arc(playerSprite.x, playerSprite.y, height, 0, 2 * Math.PI)
+            ctx.fill()
+        },
+        update() {
+            playerSprite.y += .5
+            document.body.onkeypress = function(e){
+                if(e.keyCode === 32) {
+                    playerSprite.y -= 40
+                } 
+            }
+            
+        }
+    }
+    return playerSprite
 }
 
 const boot = () => {
@@ -27,26 +53,56 @@ const boot = () => {
 
     game.obstacles = []
 
-    game.player = {}
+    game.player = []
 
-    const obstacle = createSprite({
-        x: 860,
-        y: 32,
-        width: 200,
-        height: 96,
-        color: 'blue',
+
+    game.colors = ['red', 'blue', 'green', 'yellow']
+
+    const playerOne = createPlayer({
+        x: 50,
+        y: 185,
+        width: 25,
+        height: 35,
+        color: 'cyan',
         active: true
     })
 
-    game.obstacles.push(obstacle)
+    game.player.push(playerOne)
+
+    
+    setInterval(function() {
+        const obstacle = createSprite({
+            x: 959,
+            y: ~~((Math.random() * 425) + 1),
+            width: 100,
+            height: 15,
+            color: game.colors[~~(Math.random() * 4)],
+            active: true
+        })
+
+        if (game.obstacles.length > 15) {
+            game.obstacles = []
+            game.obstacles.push(obstacle)
+        } else {
+        game.obstacles.push(obstacle)
+        }
+
+    }, 800)
+
+
+
+    
 
     const update = (delta) => {
         // log('updating')
         game.obstacles.forEach(obstacle => {
             obstacle && obstacle.active && obstacle.update && obstacle.update(delta)
         })
-        
-        
+
+        game.player.forEach(playerOne => {
+            playerOne && playerOne.active && playerOne.update && playerOne.update(delta)
+        })
+
     }
 
     const draw = () => {
@@ -56,6 +112,10 @@ const boot = () => {
         game.obstacles.forEach(obstacle => {
             obstacle && obstacle.visible && obstacle.draw && obstacle.draw(ui.ctx)
 
+        })
+
+        game.player.forEach(playerOne => {
+            playerOne && playerOne.visible && playerOne.draw && playerOne.draw(ui.ctx)
         })
     }
 
