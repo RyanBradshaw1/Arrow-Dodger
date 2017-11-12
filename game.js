@@ -35,11 +35,15 @@ const createPlayer = ({x, y, width, height, color, active}) => {
             ctx.fill()
         },
         update() {
-            playerSprite.y += .5
-            document.body.onkeypress = function(e){
-                if(e.keyCode === 32) {
-                    playerSprite.y -= 40
-                } 
+            if(playerSprite.y <= 414) {
+                playerSprite.y += 1
+            }
+            document.body.onkeydown = function(e){
+                if((e.keyCode === 32) && (playerSprite.y >= 75)) {
+                    playerSprite.y -= 60
+                } else if((e.keyCode === 40) && (playerSprite.y <= 350)) {
+                    playerSprite.y += 40
+                }
             }
             
         }
@@ -59,10 +63,10 @@ const boot = () => {
     game.colors = ['red', 'blue', 'green', 'yellow']
 
     const playerOne = createPlayer({
-        x: 50,
+        x: 40,
         y: 185,
         width: 25,
-        height: 35,
+        height: 25,
         color: 'cyan',
         active: true
     })
@@ -80,14 +84,9 @@ const boot = () => {
             active: true
         })
 
-        if (game.obstacles.length > 15) {
-            game.obstacles = []
-            game.obstacles.push(obstacle)
-        } else {
         game.obstacles.push(obstacle)
-        }
-
-    }, 800)
+        
+    }, 300)
 
 
 
